@@ -123,6 +123,11 @@ case $1 in
         shift
         regular_pipeline "$@"
         ;;
+    srg)
+        echo "Executing strongly regular graph pipeline"
+        shift
+        srg_pipeline "$@"
+        ;;
     *)
         echo "Unknown parameter: $1, type --help for help"
         exit 1;;

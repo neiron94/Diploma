@@ -3,7 +3,7 @@
 function tree_pipeline() {
     # shellcheck disable=SC2086
     if [ $RUN_GEN = "true" ]; then
-        DATASET_DIR="dataset/tree/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}/"
+        DATASET_DIR="generated_dataset/tree/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}/"
         PROCESSED_FILENAME="processed/tree/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}.csv"
         PICTURE_DIR="pictures/tree/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}/"
     else
@@ -13,7 +13,7 @@ function tree_pipeline() {
 
     # Generation
     if [ "$RUN_GEN" = "true" ]; then
-        sage -python generation.sage --type tree --start "$START" --end "$END" --step "$STEP" --set_size "$SET_SIZE" --output_dir "$DATASET_DIR"
+        sage -python generation.py --type tree --start "$START" --end "$END" --step "$STEP" --set_size "$SET_SIZE" --output_dir "$DATASET_DIR"
     fi
 
     # Processing

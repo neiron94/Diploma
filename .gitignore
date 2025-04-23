@@ -21,6 +21,6 @@ Makefile
 .DS_Store
 
 # Generated output
-dataset/
+generated_dataset/
 pictures/
 processed/

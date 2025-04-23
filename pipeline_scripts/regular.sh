@@ -17,7 +17,7 @@ function regular_pipeline() {
     done
 
     if [ "$RUN_GEN" = "true" ]; then
-        DATASET_DIR="dataset/regular/${DEGREE}/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}/"
+        DATASET_DIR="generated_dataset/regular/${DEGREE}/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}/"
         PROCESSED_FILENAME="processed/regular/${DEGREE}/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}.csv"
         PICTURE_DIR="pictures/regular/${DEGREE}/${START}_${END}_${STEP}_${SET_SIZE}/${TIMESTAMP}/"
     else
@@ -27,7 +27,7 @@ function regular_pipeline() {
 
     # Generation
     if [ "$RUN_GEN" = "true" ]; then
-        sage -python generation.sage --type regular --degree "$DEGREE" --start "$START" --end "$END" --step "$STEP" --set_size "$SET_SIZE" --output_dir "$DATASET_DIR" --oi True
+        sage -python generation.py --type regular --degree "$DEGREE" --start "$START" --end "$END" --step "$STEP" --set_size "$SET_SIZE" --output_dir "$DATASET_DIR" --oi True
     fi
 
     # Processing
