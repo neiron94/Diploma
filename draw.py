@@ -6,7 +6,8 @@ import os
 def visualize(data_file, output_dir, title, only_isomorphic):
     os.makedirs(output_dir, exist_ok=True)
     output_file = os.path.join(output_dir, "data.png")
-    output_file_scaled = os.path.join(output_dir, "data_scaled.png")
+    output_file_scaled_y = os.path.join(output_dir, "data_scaled_y.png")
+    output_file_scaled_xy = os.path.join(output_dir, "data_scaled_xy.png")
 
     # Read the CSV file
     df = pd.read_csv(data_file, delimiter=',')
@@ -44,9 +45,16 @@ def visualize(data_file, output_dir, title, only_isomorphic):
     # Set y-axis to logarithmic scale
     plt.yscale('log')
 
-    # Save the scaled plot as an image
-    plt.savefig(output_file_scaled, dpi=300, bbox_inches='tight')
-    print(f"Scaled plot saved as '{output_file_scaled}'")
+    # Save the scaled-y plot as an image
+    plt.savefig(output_file_scaled_y, dpi=300, bbox_inches='tight')
+    print(f"Scaled-y plot saved as '{output_file_scaled_y}'")
+
+    # Set x-axis to logarithmic scale
+    plt.xscale('log')
+
+    # Save the scaled-xy plot as an image
+    plt.savefig(output_file_scaled_xy, dpi=300, bbox_inches='tight')
+    print(f"Scaled-xy plot saved as '{output_file_scaled_xy}'")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Visualize isomorphism algorithm performance.")
