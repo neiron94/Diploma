@@ -1,0 +1,26 @@
+# Build files
+/build/
+/cmake-build-*/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Executables
+*.out
+*.exe
+*.app
+*.dSYM/
+
+# CLion and JetBrains
+.idea/
+
+# Mac system files
+.DS_Store
+
+# Generated output
+dataset/
+pictures/
+processed/
