@@ -32,7 +32,7 @@ function regular_pipeline() {
 
     # Processing
     if [ "$RUN_PROC" = "true" ]; then
-        ./process.exe "$DATASET_DIR" "$PROCESSED_FILENAME" --oi
+        ./process.exe "$DATASET_DIR" "$PROCESSED_FILENAME"
     fi
 
     # Visualisation

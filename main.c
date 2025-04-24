@@ -111,14 +111,9 @@ void free_graphs(graph **graphs, const int count) {
     free(graphs);
 }
 
-void read_filenames(const char* base_path, const bool is_isomorphic, Result *result) {
-    // Build full path
-    const char* subdir = is_isomorphic ? "isomorphic/" : "non_isomorphic/";
-    char full_path[1024];
-    snprintf(full_path, sizeof(full_path), "%s%s", base_path, subdir);
-
+void read_filenames(const char* path, Result *result) {
     // Open directory
-    DIR* dir = opendir(full_path);
+    DIR* dir = opendir(path);
     if (!dir) {
         perror("opendir failed");
         exit(EXIT_FAILURE);
@@ -173,7 +168,7 @@ void read_filenames(const char* base_path, const bool is_isomorphic, Result *res
 
 void process_graphs(const char *path, const bool is_isomorphic, Result *result) {
     // Fills result->count and result->nodes
-    read_filenames(path, is_isomorphic, result);
+    read_filenames(path, result);
 
     // Time result allocation
     result->time = malloc((result->count) * sizeof(double));
@@ -189,7 +184,7 @@ void process_graphs(const char *path, const bool is_isomorphic, Result *result) 
 
         // Read
         char filename[512];
-        snprintf(filename, sizeof(filename), "%s%s%d.g6", path, is_isomorphic ? "isomorphic/" : "non_isomorphic/", (result->nodes)[i]);
+        snprintf(filename, sizeof(filename), "%s%d.g6", path, (result->nodes)[i]);
         read_all_graphs_from_file(filename, &graphs, &graph_count);
 
         // Process
@@ -285,17 +280,33 @@ int main(const int argc, char *argv[]) {
 
     const char *dataset_path = argv[1];
     const char *result_file = argv[2];
-    bool only_isomorphic = false;
-    if (argc == 4 && strcmp(argv[3], "--oi") == 0)
-        only_isomorphic = true;
 
     // Init results
     Result result_i;
     Result result_ni;
+    bool only_isomorphic = true;
 
-    // Process
-    process_graphs(dataset_path, true, &result_i);
-    if (!only_isomorphic) process_graphs(dataset_path, false, &result_ni);
+    // Process isomorphic graphs
+    char iso_path[1024];
+    snprintf(iso_path, sizeof(iso_path), "%s%s", dataset_path, "isomorphic/");
+
+    struct stat st1;
+    if (stat(iso_path, &st1) == 0 && S_ISDIR(st1.st_mode)) { // directory exists
+        process_graphs(iso_path, true, &result_i);
+    }
+    else {
+        process_graphs(dataset_path, true, &result_i);
+    }
+
+    // Process non-isomorphic graphs
+    char non_iso_path[1024];
+    snprintf(non_iso_path, sizeof(non_iso_path), "%s%s", dataset_path, "non_isomorphic/");
+
+    struct stat st2;
+    if (stat(non_iso_path, &st2) == 0 && S_ISDIR(st2.st_mode)) { // directory exists
+        only_isomorphic = false;
+        process_graphs(non_iso_path, false, &result_ni);
+    }
 
     // Save to CSV
     write_to_csv(result_file, &result_i, &result_ni, only_isomorphic);
