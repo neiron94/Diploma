@@ -5,6 +5,38 @@ import argparse
 
 # === Graph Generators ===
 
+def generate_cactus(n):
+    if n < 1:
+        raise ValueError("Number of vertices must be positive")
+
+    G = Graph()
+    G.add_vertex(0)
+    node_counter = 1
+
+    while node_counter < n:
+        # Choose a node already in the graph to attach something to
+        base = random.choice(G.vertices())
+
+        remaining = n - node_counter
+
+        # Randomly decide to add:
+        # - a single edge
+        # - a cycle of length 3–5 (ensuring cactus property)
+        action = random.choice(['edge', 'cycle']) if remaining >= 2 else 'edge'
+
+        if action == 'edge':
+            G.add_edge(base, node_counter)
+            node_counter += 1
+        else:
+            cycle_length = random.randint(2, remaining)
+            cycle_nodes = [node_counter + i for i in range(cycle_length)]
+            G.add_edges([(base, cycle_nodes[0])] +
+                        [(cycle_nodes[i], cycle_nodes[i + 1]) for i in range(cycle_length - 1)] +
+                        [(cycle_nodes[-1], base)])
+            node_counter += cycle_length
+
+    return G
+
 def generate_tree(n):
     return graphs.RandomTree(n)
 
@@ -23,6 +55,8 @@ def generate_graph(graph_type, n, density, degree):
         return generate_random_graph(n, density)
     elif graph_type == "regular":
         return generate_regular(degree, n)
+    elif graph_type == "cactus":
+        return generate_cactus(n)
     else:
         raise ValueError(f"Unknown type of graphs: {graph_type}")
 
@@ -85,7 +119,7 @@ if __name__ == "__main__":
     parser.add_argument("--step", type=int, required=True, help="Step size for the number of nodes.")
     parser.add_argument("--set_size", type=int, required=True, help="Number of graphs to generate for each size.")
     parser.add_argument("--output_dir", type=str, required=True, help="Output directory for saving the graphs.")
-    parser.add_argument("--oi", type=bool, default=False, help="Only generate isomorphic graphs if set.")
+    parser.add_argument("--oi", action="store_true", help="Only generate isomorphic graphs if set.")
 
     args = parser.parse_args()
 

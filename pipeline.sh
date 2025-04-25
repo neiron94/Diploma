@@ -61,7 +61,7 @@ START=10
 END=500
 STEP=10
 SET_SIZE=5
-ONLY_ISOMORPHIC="False"
+ONLY_ISOMORPHIC="false"
 
 # Specific generation variables
 DEGREE=3
@@ -100,7 +100,7 @@ while [[ "$#" -gt 0 ]]; do
             SET_SIZE=$2
             shift;;
         --oi)
-            ONLY_ISOMORPHIC="True"
+            ONLY_ISOMORPHIC="true"
             ;;
         # Specific generation arguments
         --degree)
@@ -121,7 +121,7 @@ if [ "$GRAPH_TYPE" = "srg" ]; then
     RUN_GEN="false"
     DATASET_DIR="prepared_dataset/srg/"
 elif [ "$GRAPH_TYPE" = "regular" ]; then
-    ONLY_ISOMORPHIC="True"
+    ONLY_ISOMORPHIC="true"
 fi
 
 # Create files and directories names
@@ -140,7 +140,21 @@ echo "Executing pipeline. Graph type = ${GRAPH_TYPE}, timestamp = ${TIMESTAMP}."
 # 1. Generation
 if [ "$RUN_GEN" = "true" ]; then
     echo "Start generation stage"
-    sage -python generation.py --type "$GRAPH_TYPE" --density "$DENSITY" --degree "$DEGREE" --start "$START" --end "$END" --step "$STEP" --set_size "$SET_SIZE" --output_dir "$DATASET_DIR" --oi "$ONLY_ISOMORPHIC"
+    GEN_ARGS=(
+      --type "$GRAPH_TYPE"
+      --density "$DENSITY"
+      --degree "$DEGREE"
+      --start "$START"
+      --end "$END"
+      --step "$STEP"
+      --set_size "$SET_SIZE"
+      --output_dir "$DATASET_DIR"
+    )
+    if [ "$ONLY_ISOMORPHIC" = "true" ]; then
+      GEN_ARGS+=(--oi)
+    fi
+
+    sage -python generation.py "${GEN_ARGS[@]}"
 else
     echo "Drop generation stage"
 fi
