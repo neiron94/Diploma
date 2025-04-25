@@ -3,7 +3,7 @@ import sys
 import os
 import random
 
-SET_SIZE = 5
+SET_SIZE = 3
 
 def read_graph6_file(filename):
     with open(filename, 'r') as f:
