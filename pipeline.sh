@@ -50,40 +50,43 @@ END
 
 # General variables
 TIMESTAMP=$(date +%s)
-echo "Run with timestamp $TIMESTAMP"
+GRAPH_TYPE="default"
 RUN_GEN="true"
 RUN_PROC="true"
 RUN_VIS="true"
 RUN_EST="true"
 
-# Generation variables
+# Common generation variables
 START=10
 END=500
 STEP=10
 SET_SIZE=5
+ONLY_ISOMORPHIC="False"
 
-# Load all pipeline subscripts
-for script in pipeline_scripts/*.sh; do
-    source "$script"
-done
+# Specific generation variables
+DEGREE=3
+DENSITY=0.5
 
-# Process general arguments
-case $1 in
-    --drop_gen)
-        echo "Drop generation stage"
-        RUN_GEN="false"
-        DATASET_DIR=$2
-        shift
-        shift
-        ;;
-    *)
-        echo "Run all stages"
-        ;;
-esac
-
-# Process generation arguments
+# Process arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
+        # General variables
+        -h | --help | ?)
+            echo -e "${HELPTEXT}"
+            exit 0;;
+        --drop_gen)
+            RUN_GEN="false"
+            DATASET_DIR=$2
+            shift;;
+        --drop_proc)
+            RUN_GEN="false"
+            RUN_PROC="false"
+            PROCESSED_FILENAME=$2
+            shift;;
+        --type)
+            GRAPH_TYPE=$2
+            shift;;
+        # Common generation arguments
         --start)
             START=$2
             shift;;
@@ -96,39 +99,72 @@ while [[ "$#" -gt 0 ]]; do
         --set_num)
             SET_SIZE=$2
             shift;;
-        *)
-            break
+        --oi)
+            ONLY_ISOMORPHIC="True"
             ;;
+        # Specific generation arguments
+        --degree)
+            DEGREE=$2
+            shift;;
+        --density)
+            DENSITY=$2
+            shift;;
+        *)
+            echo "Unknown parameter: $1, type --help for help"
+            exit 1;;
     esac
     shift
 done
 
-# Process type argument
-case $1 in
-    -h | --help | ?)
-        echo -e "${HELPTEXT}"
-        exit 0;;
-    tree)
-        echo "Executing tree pipeline"
-        shift
-        tree_pipeline "$@"
-        ;;
-    random)
-        echo "Executing random graph pipeline"
-        shift
-        random_pipeline "$@"
-        ;;
-    regular)
-        echo "Executing regular graph pipeline"
-        shift
-        regular_pipeline "$@"
-        ;;
-    srg)
-        echo "Executing strongly regular graph pipeline"
-        shift
-        srg_pipeline "$@"
-        ;;
-    *)
-        echo "Unknown parameter: $1, type --help for help"
-        exit 1;;
-esac
+# Force some parameters for some graph types
+if [ "$GRAPH_TYPE" = "srg" ]; then
+    RUN_GEN="false"
+    DATASET_DIR="prepared_dataset/srg/"
+elif [ "$GRAPH_TYPE" = "regular" ]; then
+    ONLY_ISOMORPHIC="True"
+fi
+
+# Create files and directories names
+if [ "$RUN_GEN" = "true" ]; then
+    DATASET_DIR="generated_dataset/${GRAPH_TYPE}/${TIMESTAMP}/"
+fi
+if [ "$RUN_PROC" = "true" ]; then
+    PROCESSED_FILENAME="processed/${GRAPH_TYPE}/${TIMESTAMP}.csv"
+fi
+PICTURE_DIR="pictures/${GRAPH_TYPE}/${TIMESTAMP}/"
+
+
+# Execute pipeline
+echo "Executing pipeline. Graph type = ${GRAPH_TYPE}, timestamp = ${TIMESTAMP}."
+
+# 1. Generation
+if [ "$RUN_GEN" = "true" ]; then
+    echo "Start generation stage"
+    sage -python generation.py --type "$GRAPH_TYPE" --density "$DENSITY" --degree "$DEGREE" --start "$START" --end "$END" --step "$STEP" --set_size "$SET_SIZE" --output_dir "$DATASET_DIR" --oi "$ONLY_ISOMORPHIC"
+else
+    echo "Drop generation stage"
+fi
+
+# 2. Processing
+if [ "$RUN_PROC" = "true" ]; then
+    echo "Start processing stage"
+    ./process.exe "$DATASET_DIR" "$PROCESSED_FILENAME"
+else
+    echo "Drop processing stage"
+fi
+
+# 3. Visualisation
+if [ "$RUN_VIS" = "true" ]; then
+    echo "Start visualisation stage"
+    python draw.py --data_file "$PROCESSED_FILENAME" --output_dir "$PICTURE_DIR"
+else
+    echo "Drop visualisation stage"
+fi
+
+# 4. Estimation
+if [ "$RUN_EST" = "true" ]; then
+    echo "Start estimation stage"
+    python estimate.py --data_file "$PROCESSED_FILENAME" --output_dir "$PICTURE_DIR"
+else
+    echo "Drop estimation stage"
+fi

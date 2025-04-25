@@ -85,7 +85,7 @@ if __name__ == "__main__":
     parser.add_argument("--step", type=int, required=True, help="Step size for the number of nodes.")
     parser.add_argument("--set_size", type=int, required=True, help="Number of graphs to generate for each size.")
     parser.add_argument("--output_dir", type=str, required=True, help="Output directory for saving the graphs.")
-    parser.add_argument("--oi", action="store_true", help="Only generate isomorphic graphs if set.")
+    parser.add_argument("--oi", type=bool, default=False, help="Only generate isomorphic graphs if set.")
 
     args = parser.parse_args()
 

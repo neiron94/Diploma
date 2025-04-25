@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import argparse
 import os
 
-def visualize(data_file, output_dir, title, only_isomorphic):
+def visualize(data_file, output_dir):
     os.makedirs(output_dir, exist_ok=True)
     output_file = os.path.join(output_dir, "data.png")
     output_file_scaled_y = os.path.join(output_dir, "data_scaled_y.png")
@@ -14,9 +14,8 @@ def visualize(data_file, output_dir, title, only_isomorphic):
 
     # Split data based on is_isomorphic value
     iso_data = df[df['is_isomorphic'] == True]
-    non_iso_data = None
-    if not only_isomorphic:
-        non_iso_data = df[df['is_isomorphic'] == False]
+    non_iso_data = df[df['is_isomorphic'] == False]
+    only_isomorphic = non_iso_data.empty
 
     # Create the plot
     plt.figure(figsize=(20, 12))
@@ -31,10 +30,6 @@ def visualize(data_file, output_dir, title, only_isomorphic):
     # Add labels and legend
     plt.xlabel('Node Count')
     plt.ylabel('Average Time (seconds)')
-    if not only_isomorphic:
-        plt.title('Algorithm Performance on Isomorphic ' + title)
-    else:
-        plt.title('Algorithm Performance on Isomorphic vs Non-Isomorphic ' + title)
     plt.legend()
     plt.grid(True)
 
@@ -60,8 +55,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Visualize isomorphism algorithm performance.")
     parser.add_argument("--data_file", type=str, help="File with data to visualize.")
     parser.add_argument("--output_dir", type=str, help="Relative path of output directory.")
-    parser.add_argument("--title", type=str, help="Title of plot.")
-    parser.add_argument("--oi", type=bool, default=False, help="If True plots only isomorphic results.")
 
     args = parser.parse_args()
-    visualize(args.data_file, args.output_dir, args.title, args.oi)
+    visualize(args.data_file, args.output_dir)
