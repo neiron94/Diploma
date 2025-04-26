@@ -122,6 +122,10 @@ if [ "$GRAPH_TYPE" = "srg" ]; then
     DATASET_DIR="prepared_dataset/srg/"
 elif [ "$GRAPH_TYPE" = "regular" ]; then
     ONLY_ISOMORPHIC="true"
+elif [ "$GRAPH_TYPE" = "cycle" ]; then
+    ONLY_ISOMORPHIC="true"
+elif [ "$GRAPH_TYPE" = "complete" ]; then
+    ONLY_ISOMORPHIC="true"
 fi
 
 # Create files and directories names

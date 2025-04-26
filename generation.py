@@ -5,6 +5,12 @@ import argparse
 
 # === Graph Generators ===
 
+def generate_complete(n):
+    return graphs.CompleteGraph(n)
+
+def generate_cycle(n):
+    return graphs.CycleGraph(n)
+
 def generate_cactus(n):
     if n < 1:
         raise ValueError("Number of vertices must be positive")
@@ -57,6 +63,10 @@ def generate_graph(graph_type, n, density, degree):
         return generate_regular(degree, n)
     elif graph_type == "cactus":
         return generate_cactus(n)
+    elif graph_type == "cycle":
+        return generate_cycle(n)
+    elif graph_type == "complete":
+        return generate_complete(n)
     else:
         raise ValueError(f"Unknown type of graphs: {graph_type}")
 
