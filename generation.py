@@ -5,6 +5,9 @@ import argparse
 
 # === Graph Generators ===
 
+def generate_path(n):
+    return graphs.PathGraph(n)
+
 def generate_regular_bipartite(n, d):
     if n < 2:
         raise ValueError("At least 2 vertices are required")
@@ -128,6 +131,8 @@ def generate_regular(d, n):
 
 def generate_graph(graph_type, n, density, degree):
     match graph_type:
+        case "path":
+            return generate_path(n)
         case "regular_bipartite":
             return generate_regular_bipartite(n, degree)
         case "complete_bipartite":
