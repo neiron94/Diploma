@@ -165,6 +165,15 @@ fi
 # 2. Processing
 if [ "$RUN_PROC" = "true" ]; then
     echo "Start processing stage"
+    if [ ! -f ./process.exe ]; then
+        mkdir -p build
+        cd build
+        cmake ..
+        make
+        cp ./process.exe ../process.exe
+        cd ..
+    fi
+
     ./process.exe "$DATASET_DIR" "$PROCESSED_FILENAME"
 else
     echo "Drop processing stage"
