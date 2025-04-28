@@ -32,15 +32,10 @@ def polynomial(x, a, b):
     return a * x ** b
 
 def estimate(data_file, output_dir):
-    # data_file = "processed/regular/3/10_1000_10_5/1736474468.csv"
-    # data_file = "processed/tree/10_500_10_5/1737938586.csv"
-    # output_dir = "test_out/"
-    # data_file = "processed/random/0.9/10_1000_10_5/1735779679.csv"
-    # data_file = "processed/tree/10_3000_10_5/1735856912.csv"
     os.makedirs(output_dir, exist_ok=True)
     output_picture = os.path.join(output_dir, "estimation.png")
     output_metrics = os.path.join(output_dir, "metrics.csv")
-    data = (pd.read_csv(data_file, delimiter=','))
+    data = pd.read_csv(data_file, delimiter=',').sort_values(by='node_count')
     x = np.array(data['node_count'])
     y = np.array(data['average_time'])
 
