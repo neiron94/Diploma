@@ -117,18 +117,15 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 # Force some parameters for some graph types
-if [ "$GRAPH_TYPE" = "srg" ]; then
-    RUN_GEN="false"
-    DATASET_DIR="prepared_dataset/srg/"
-elif [ "$GRAPH_TYPE" = "regular" ]; then
-    ONLY_ISOMORPHIC="true"
-elif [ "$GRAPH_TYPE" = "cycle" ]; then
-    ONLY_ISOMORPHIC="true"
-elif [ "$GRAPH_TYPE" = "complete" ]; then
-    ONLY_ISOMORPHIC="true"
-elif [ "$GRAPH_TYPE" = "regular_bipartite" ]; then
-    ONLY_ISOMORPHIC="true"
-fi
+case "$GRAPH_TYPE" in
+    srg|planar)
+        RUN_GEN="false"
+        DATASET_DIR="prepared_dataset/${GRAPH_TYPE}/"
+        ;;
+    regular|cycle|complete|regular_bipartite)
+        ONLY_ISOMORPHIC="true"
+        ;;
+esac
 
 # Create files and directories names
 if [ "$RUN_GEN" = "true" ]; then
