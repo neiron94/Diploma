@@ -126,6 +126,8 @@ elif [ "$GRAPH_TYPE" = "cycle" ]; then
     ONLY_ISOMORPHIC="true"
 elif [ "$GRAPH_TYPE" = "complete" ]; then
     ONLY_ISOMORPHIC="true"
+elif [ "$GRAPH_TYPE" = "regular_bipartite" ]; then
+    ONLY_ISOMORPHIC="true"
 fi
 
 # Create files and directories names
