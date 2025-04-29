@@ -24,3 +24,6 @@ Makefile
 generated_dataset/
 pictures/
 processed/
+
+# nauty
+nauty2_8_9/

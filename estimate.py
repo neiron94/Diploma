@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from sklearn.metrics import r2_score
 
-
 def compute_metrics(y_true, y_pred):
     rss = np.sum((y_true - y_pred) ** 2)
     r2 = r2_score(y_true, y_pred)
