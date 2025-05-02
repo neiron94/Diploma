@@ -3,7 +3,13 @@ project(project C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(process.exe main.c)
+add_executable(
+        process.exe
+        process_sources/main.c
+        process_sources/file_processor.c
+        process_sources/graph_processor.c
+        process_sources/nauty_isomorphism.c
+)
 
 # Path to nauty.a lib
 link_directories(${CMAKE_SOURCE_DIR}/nauty2_8_9)

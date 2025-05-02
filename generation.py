@@ -167,6 +167,9 @@ def generate_graph(graph_type, n, density, degree):
 # === Graph set generation ===
 
 def generate_graphs(is_isomorphic, start, end, step, set_size, output_dir, graph_type, density, degree):
+    output_dir = os.path.join(output_dir, "isomorphic" if is_isomorphic else "non_isomorphic")
+    os.makedirs(output_dir, exist_ok=True)
+
     for n in range(start, end + 1, step):
         # If exception is thrown during generation, skip current n generation
         try:
@@ -177,8 +180,6 @@ def generate_graphs(is_isomorphic, start, end, step, set_size, output_dir, graph
                 graph_set = generate_non_isomorphic_set(n, set_size, graph_type, density, degree)
 
             # Save graph set to file in subdirectory
-            output_dir = os.path.join(output_dir, "isomorphic" if is_isomorphic else "non_isomorphic")
-            os.makedirs(output_dir, exist_ok=True)
             file_path = os.path.join(output_dir, f"{n}.g6")
             with open(file_path, "w") as file:
                 for g in graph_set:
