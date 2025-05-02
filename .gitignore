@@ -27,3 +27,4 @@ processed/
 
 # nauty
 nauty2_8_9/
+process_sources/nauty.h

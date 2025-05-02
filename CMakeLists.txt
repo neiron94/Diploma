@@ -9,6 +9,8 @@ add_executable(
         process_sources/file_processor.c
         process_sources/graph_processor.c
         process_sources/nauty_isomorphism.c
+        process_sources/tree_optimization.c
+        process_sources/my_graph.c
 )
 
 # Path to nauty.a lib

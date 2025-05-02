@@ -80,6 +80,10 @@ ONLY_ISOMORPHIC="false"
 DEGREE=3
 DENSITY=0.5
 
+# Processing variables
+OPT_TREE="false"
+OPT_PLANAR="false"
+
 # Process arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
@@ -122,6 +126,13 @@ while [[ "$#" -gt 0 ]]; do
         --density)
             DENSITY=$2
             shift;;
+        # Processing arguments
+        --opt_tree)
+            OPT_TREE="true"
+            ;;
+        --opt_planar)
+            OPT_PLANAR="true"
+            ;;
         *)
             echo "Unknown parameter: $1, type --help for help"
             exit 1;;
@@ -189,7 +200,18 @@ if [ "$RUN_PROC" = "true" ]; then
         cd ..
     fi
 
-    ./process.exe "$DATASET_DIR" "$PROCESSED_FILENAME"
+    PROC_ARGS=(
+      "$DATASET_DIR"
+      "$PROCESSED_FILENAME"
+    )
+    if [ "$OPT_TREE" = "true" ]; then
+      PROC_ARGS+=(--opt_tree)
+    fi
+    if [ "$OPT_PLANAR" = "true" ]; then
+      PROC_ARGS+=(--opt_planar)
+    fi
+
+    ./process.exe "${PROC_ARGS[@]}"
 else
     echo "Drop processing stage"
 fi
