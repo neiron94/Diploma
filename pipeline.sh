@@ -135,7 +135,7 @@ case "$GRAPH_TYPE" in
         RUN_GEN="false"
         DATASET_DIR="prepared_dataset/${GRAPH_TYPE}/"
         ;;
-    regular|cycle|complete|regular_bipartite)
+    cycle|complete)
         ONLY_ISOMORPHIC="true"
         ;;
 esac
@@ -178,6 +178,8 @@ fi
 # 2. Processing
 if [ "$RUN_PROC" = "true" ]; then
     echo "Start processing stage"
+
+    # Compile process.exe if running for the first time
     if [ ! -f ./process.exe ]; then
         mkdir -p build
         cd build
