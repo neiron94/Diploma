@@ -42,37 +42,36 @@ bool check_isomorphism_tree(myGraph *g1, myGraph *g2) {
     int *centers1 = find_tree_centers(g1, &center_count1);
     int *centers2 = find_tree_centers(g2, &center_count2);
 
-    // Prepare encodings for centers1
-    char **encodings1 = malloc(center_count1 * sizeof(char*));
-    for (int i = 0; i < center_count1; i++) {
-        encodings1[i] = encode_tree(g1, centers1[i], -1);
-    }
+    // Prepare memory for encodings for centers2
+    char **encodings2 = malloc(center_count2 * sizeof(char*));
 
-    // Create encodings for centers2 and compare to encodings for centers1
-    for (int i = 0; i < center_count2; i++) {
-        char *encoding2 = encode_tree(g2, centers2[i], -1);
-        for (int j = 0; j < center_count1; j++) {
+    // Create encodings for centers1 and compare to encodings for centers2
+    for (int i = 0; i < center_count1; i++) {
+        char *encoding1 = encode_tree(g1, centers1[i], -1);
+        for (int j = 0; j < center_count2; j++) {
+            // Create only once
+            if (i == 0) encodings2[j] = encode_tree(g2, centers2[j], -1);
             // If encoding are the same, then trees are isomorphic
-            if (strcmp(encoding2, encodings1[j]) == 0) {
+            if (strcmp(encoding1, encodings2[j]) == 0) {
                 // Free memory
                 for (int k = 0; k < center_count1; k++) {
-                    free(encodings1[k]);
+                    free(encodings2[k]);
                 }
-                free(encodings1);
-                free(encoding2);
+                free(encodings2);
+                free(encoding1);
                 free(centers1);
                 free(centers2);
                 return true;
             }
         }
-        free(encoding2);
+        free(encoding1);
     }
 
     // Free memory
     for (int i = 0; i < center_count1; i++) {
-        free(encodings1[i]);
+        free(encodings2[i]);
     }
-    free(encodings1);
+    free(encodings2);
     free(centers1);
     free(centers2);
     return false;
