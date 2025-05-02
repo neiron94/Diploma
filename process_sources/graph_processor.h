@@ -6,6 +6,6 @@
 #include "nauty_isomorphism.h"
 #include "file_processor.h"
 
-void process_graphs(const char *path, const bool is_isomorphic, Result *result);
+void process_graphs(const char*, const bool, Result*, bool, bool);
 
 #endif

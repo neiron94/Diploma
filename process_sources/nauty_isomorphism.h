@@ -5,6 +5,6 @@
 #include <time.h>
 #include "nauty.h"
 
-double check_isomorphism_nauty(graph **graphs, const int graphs_count, const int n, bool should_be_isomorphic);
+double check_isomorphism_nauty(graph*, graph*, const int, bool);
 
 #endif
