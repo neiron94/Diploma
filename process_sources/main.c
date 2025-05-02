@@ -20,7 +20,7 @@ int main(const int argc, char *argv[]) {
     bool only_isomorphic = true;
 
     // Start isomorphic/non-isomorphic graph processing
-    start_process(dataset_path, true, &result_i, nullptr, opt_tree, opt_planar);
+    start_process(dataset_path, true, &result_i, NULL, opt_tree, opt_planar);
     start_process(dataset_path, false, &result_ni, &only_isomorphic, opt_tree, opt_planar);
 
     // Save to CSV
