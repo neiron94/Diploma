@@ -1,11 +1,10 @@
 #include "graph_processor.h"
 
-double process_graph_set(graph**, const int, const int, bool, bool, bool);
+double process_graph_set(graph**, const int, const int, bool, bool);
 bool try_tree_optimization(graph*, graph*, const int, bool, double*);
-bool try_planar_optimization();
 void free_graphs(graph**, const int);
 
-void process_graphs(const char *path, const bool is_isomorphic, Result *result, bool opt_tree, bool opt_planar) {
+void process_graphs(const char *path, const bool is_isomorphic, Result *result, bool opt_tree) {
     // Fills result->count and result->nodes
     read_filenames(path, result);
 
@@ -30,7 +29,7 @@ void process_graphs(const char *path, const bool is_isomorphic, Result *result, 
         read_all_graphs_from_file(filename, &graphs, &graph_count);
 
         // Process graph set
-        const double time = process_graph_set(graphs, graph_count, (result->nodes)[i], is_isomorphic, opt_tree, opt_planar);
+        const double time = process_graph_set(graphs, graph_count, (result->nodes)[i], is_isomorphic, opt_tree);
         (result->time)[i] = time;
 
         // Free
@@ -40,7 +39,7 @@ void process_graphs(const char *path, const bool is_isomorphic, Result *result, 
     printf("%s graphs are processed.\n", is_isomorphic ? "Isomorphic" : "Non-isomorphic");
 }
 
-double process_graph_set(graph **graphs, const int graph_count, const int n, bool is_isomorphic, bool opt_tree_flag, bool opt_planar_flag) {
+double process_graph_set(graph **graphs, const int graph_count, const int n, bool is_isomorphic, bool opt_tree_flag) {
     double total_time = 0.0;  // Total time for isomorphism checks
     int num_checks = 0;       // Number of comparisons made
     for (int i = 0; i < graph_count; i++) {
@@ -48,11 +47,8 @@ double process_graph_set(graph **graphs, const int graph_count, const int n, boo
             // Try optimization for trees, if flag --opt_tree was set
             bool opt_tree_success = opt_tree_flag ? try_tree_optimization(graphs[i], graphs[j], n, is_isomorphic, &total_time) : false;
 
-            // Try optimization for planar graphs, if flag --opt_planar was set and we have not already used tree optimization
-            bool opt_planar_success = (!opt_tree_success && opt_planar_flag) ? try_planar_optimization() : false;
-
             // If no optimization successed, then run common nauty algorithm
-            if (!opt_tree_success && !opt_planar_success) {
+            if (!opt_tree_success) {
                 total_time += check_isomorphism_nauty(graphs[i], graphs[j], n, is_isomorphic);
             }
 
@@ -102,11 +98,6 @@ bool try_tree_optimization(graph *graph1, graph *graph2, const int n, bool shoul
     free_mygraph(my_graph2);
 
     return result;
-}
-
-bool try_planar_optimization() {
-    // TODO - implement
-    return false;
 }
 
 void free_graphs(graph **graphs, const int count) {

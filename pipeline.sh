@@ -7,18 +7,9 @@ This script runs a complete pipeline for generating, processing, and visualizing
 It supports multiple graph types including trees, random graphs, regular graphs, and more.
 
 GENERAL OPTIONS:
-  --drop_gen <dataset_path>     Skip generation stage and use an existing dataset at the given path.
-  --drop_proc <processed_file>  Skip both generation and processing stages. Provide path to an existing processed .csv file.
   -h, --help, ?                 Show this help message and exit.
 
-GENERATION OPTIONS (used if generation is not dropped):
-  --start <int>                 Starting graph size (default: 10)
-  --end <int>                   Ending graph size (default: 500)
-  --step <int>                  Step size between graph sizes (default: 10)
-  --set_num <int>               Number of graphs to generate per size (default: 3)
-  --oi                          Only generate isomorphic graphs
-
-GRAPH_TYPE (required if generation stage is not dropped):
+GRAPH TYPE (required if generation stage is not dropped):
   --type <graph_type>           The type of graph to generate or process.
 
   Supported graph types:
@@ -35,12 +26,31 @@ GRAPH_TYPE (required if generation stage is not dropped):
     srg
     planar
 
-TYPE-SPECIFIC OPTIONS:
+FLOW OPTIONS:
+  --drop_gen <dataset_path>     Skip generation stage and use an existing dataset at the given path.
+  --drop_proc <processed_file>  Skip both generation and processing stages. Provide path to an existing processed .csv file.
+  --drop_vis <processed_file>   Skip generation, processing and visualisation stages. Provide path to an existing processed .csv file.
+  --only_gen                    Run only generation stage.
+  --only_proc <dataset_path>    Run only processing stage with dataset at the given path.
+  --only_vis <processed_file>   Run only visualisation stage with provided processed .csv file.
+  --only_est <processed_file>   Run only estimation stage with provided processed .csv file.
+
+GENERATION OPTIONS (used if generation is not dropped):
+  --start <int>                 Starting graph size (default: 10).
+  --end <int>                   Ending graph size (default: 500).
+  --step <int>                  Step size between graph sizes (default: 10).
+  --set_num <int>               Number of graphs to generate per size (default: 3).
+  --oi                          Only generate isomorphic graphs.
+
+TYPE-SPECIFIC GENERATION OPTIONS:
   For 'random' and 'bipartite':
-    --density <float>           Density of random graphs (default: 0.5)
+    --density <float>           Density of random graphs (default: 0.5).
 
   For 'regular' and 'regular_bipartite':
-    --degree <int>              Degree of each vertex (default: 3)
+    --degree <int>              Degree of each vertex (default: 3).
+
+PROCESSING OPTIONS:
+  --opt_tree                    Run processing stage with optimization for trees.
 
 NOTES:
   - For 'srg' and 'planar' types, generation is skipped automatically and pre-prepared datasets are used.
@@ -64,6 +74,8 @@ END
 # General variables
 TIMESTAMP=$(date +%s)
 GRAPH_TYPE="default"
+
+# Flow manipulation variables
 RUN_GEN="true"
 RUN_PROC="true"
 RUN_VIS="true"
@@ -91,6 +103,10 @@ while [[ "$#" -gt 0 ]]; do
         -h | --help | ?)
             echo -e "${HELPTEXT}"
             exit 0;;
+        --type)
+            GRAPH_TYPE=$2
+            shift;;
+        # Flow manipulation
         --drop_gen)
             RUN_GEN="false"
             DATASET_DIR=$2
@@ -100,8 +116,28 @@ while [[ "$#" -gt 0 ]]; do
             RUN_PROC="false"
             PROCESSED_FILENAME=$2
             shift;;
-        --type)
-            GRAPH_TYPE=$2
+        --drop_vis|--only_est)
+            RUN_GEN="false"
+            RUN_PROC="false"
+            RUN_VIS="false"
+            PROCESSED_FILENAME=$2
+            shift;;
+        --only_gen)
+            RUN_PROC="false"
+            RUN_VIS="false"
+            RUN_EST="false"
+            shift;;
+        --only_proc)
+            RUN_GEN="false"
+            RUN_VIS="false"
+            RUN_EST="false"
+            DATASET_DIR=$2
+            shift;;
+        --only_vis)
+            RUN_GEN="false"
+            RUN_PROC="false"
+            RUN_EST="false"
+            PROCESSED_FILENAME=$2
             shift;;
         # Common generation arguments
         --start)
@@ -129,9 +165,6 @@ while [[ "$#" -gt 0 ]]; do
         # Processing arguments
         --opt_tree)
             OPT_TREE="true"
-            ;;
-        --opt_planar)
-            OPT_PLANAR="true"
             ;;
         *)
             echo "Unknown parameter: $1, type --help for help"
@@ -167,6 +200,8 @@ echo "Executing pipeline. Graph type = ${GRAPH_TYPE}, timestamp = ${TIMESTAMP}."
 # 1. Generation
 if [ "$RUN_GEN" = "true" ]; then
     echo "Start generation stage"
+
+    # Set generation arguments
     GEN_ARGS=(
       --type "$GRAPH_TYPE"
       --density "$DENSITY"
@@ -193,13 +228,14 @@ if [ "$RUN_PROC" = "true" ]; then
     # Compile process.exe if running for the first time
     if [ ! -f ./process.exe ]; then
         mkdir -p build
-        cd build
+        cd build || { echo "Failed to compile process.exe"; exit 1; }
         cmake ..
         make
         cp ./process.exe ../process.exe
         cd ..
     fi
 
+    # Set processing arguments
     PROC_ARGS=(
       "$DATASET_DIR"
       "$PROCESSED_FILENAME"
@@ -207,11 +243,8 @@ if [ "$RUN_PROC" = "true" ]; then
     if [ "$OPT_TREE" = "true" ]; then
       PROC_ARGS+=(--opt_tree)
     fi
-    if [ "$OPT_PLANAR" = "true" ]; then
-      PROC_ARGS+=(--opt_planar)
-    fi
 
-    ./process.exe "${PROC_ARGS[@]}"
+    ./process.exe "${PROC_ARGS[@]}" || { echo "Processing stage failed, stop pipeline"; exit 1; }
 else
     echo "Drop processing stage"
 fi
@@ -219,7 +252,14 @@ fi
 # 3. Visualisation
 if [ "$RUN_VIS" = "true" ]; then
     echo "Start visualisation stage"
-    python3 draw.py --data_file "$PROCESSED_FILENAME" --output_dir "$PICTURE_DIR"
+
+    # Set visualisation arguments
+    VIS_ARGS=(
+      --data_file "$PROCESSED_FILENAME"
+      --output_dir "$PICTURE_DIR"
+    )
+
+    python3 draw.py "${VIS_ARGS[@]}" || { echo "Visualisation stage failed, stop pipeline"; exit 1; }
 else
     echo "Drop visualisation stage"
 fi
@@ -227,7 +267,14 @@ fi
 # 4. Estimation
 if [ "$RUN_EST" = "true" ]; then
     echo "Start estimation stage"
-    python3 estimate.py --data_file "$PROCESSED_FILENAME" --output_dir "$PICTURE_DIR"
+
+    # Set estimation arguments
+    EST_ARGS=(
+      --data_file "$PROCESSED_FILENAME"
+      --output_dir "$PICTURE_DIR"
+    )
+
+    python3 estimate.py "${EST_ARGS[@]}" || { echo "Estimation stage failed, stop pipeline"; exit 1; }
 else
     echo "Drop estimation stage"
 fi

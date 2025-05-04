@@ -9,6 +9,6 @@
 #include "tree_optimization.h"
 #include "my_graph.h"
 
-void process_graphs(const char*, const bool, Result*, bool, bool);
+void process_graphs(const char*, const bool, Result*, bool);
 
 #endif
