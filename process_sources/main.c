@@ -70,7 +70,7 @@ void start_process(const char *dataset_path, bool is_isomorphic, Result *result,
         }
         process_graphs(path, is_isomorphic, result, opt_tree);
     }
-    // Else use data directly from dataset_path (it is consedered isomorphic)
+    // Else use data directly from dataset_path (it is considered isomorphic)
     else if (is_isomorphic) {
         process_graphs(dataset_path, is_isomorphic, result, opt_tree);
     }

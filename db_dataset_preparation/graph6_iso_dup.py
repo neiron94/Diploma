@@ -22,13 +22,17 @@ def duplicate_all_graphs(input_dir, output_dir):
 
     os.makedirs(output_dir, exist_ok=True)
 
+    # Read all g6 files
     for filename in os.listdir(input_dir):
         if filename.endswith(".g6"):
             input_path = os.path.join(input_dir, filename)
+            # If graph cannot be duplicated, then skip it
             try:
+                # Read graph from file and shuffle its labeling
                 original_graph = read_graph6_file(input_path)
                 graph_set = [original_graph] + [shuffle_labels(original_graph) for _ in range(SET_SIZE - 1)]
 
+                # Save to file with the same name
                 base_name = os.path.splitext(filename)[0]
                 output_path = os.path.join(output_dir, base_name + ".g6")
 

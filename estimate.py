@@ -90,8 +90,8 @@ def estimate(data_file, output_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Estimate best fitting function and visualize results.")
-    parser.add_argument("--data_file", type=str, help="Relative path to CSV file with data for estimation.")
-    parser.add_argument("--output_dir", type=str, help="Relative path of output directory for picture and CSV metric result.")
+    parser.add_argument("--data_file", type=str, required=True, help="Relative path to CSV file with data for estimation.")
+    parser.add_argument("--output_dir", type=str, required=True, help="Relative path of output directory for picture and CSV metric result.")
 
     args = parser.parse_args()
     estimate(args.data_file, args.output_dir)

@@ -53,8 +53,8 @@ def visualize(data_file, output_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Visualize isomorphism algorithm performance.")
-    parser.add_argument("--data_file", type=str, help="File with data to visualize.")
-    parser.add_argument("--output_dir", type=str, help="Relative path of output directory.")
+    parser.add_argument("--data_file", type=str, required=True, help="File with data to visualize.")
+    parser.add_argument("--output_dir", type=str, required=True, help="Relative path of output directory.")
 
     args = parser.parse_args()
     visualize(args.data_file, args.output_dir)

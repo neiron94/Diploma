@@ -5,16 +5,23 @@ import os
 def read_edges_from_file(filename):
     edges = []
     with open(filename, "r") as f:
+        # Skip first line. Boltzmann generator writes additional info there.
         next(f)
+
+        # Read and process each line (each edge)
         for line in f:
             line = line.strip()
+            # Skip last line. Boltzmann generator puts "0 0" there.
             if line == "" or line.startswith("#") or line.startswith("0 0"):
-                continue  # Skip empty lines and comments
+                continue
+
+            # Add edge to list of edges
             parts = line.split()
             if len(parts) != 2:
                 raise ValueError(f"Invalid edge line: {line}")
             u, v = map(int, parts)
             edges.append((u, v))
+
     return edges
 
 def main():
@@ -26,8 +33,11 @@ def main():
     output_dir = sys.argv[2]
 
     edges = read_edges_from_file(input_file)
+
+    # Create Sage Graph from edges list
     G = Graph(edges)
 
+    # All graphs with more than 2000 nodes are ignored
     if G.order() > 2000:
         print(f"Skip graph with {G.order()} vertices")
         return

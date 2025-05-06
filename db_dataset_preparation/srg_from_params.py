@@ -4,13 +4,16 @@ import os
 import sys
 
 def generate_graphs_from_csv(csv_file, output_dir):
-    # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
 
     with open(csv_file, newline='') as file:
         reader = csv.DictReader(file)
+
+        # Read each line of csv file
         for row in reader:
+            # If SRG graph cannot be generated from the given parameters, then skip
             try:
+                # Fetch parameters
                 v = int(row['v'])
                 k = int(row['k'])
                 l = int(row['lambda'])
@@ -18,8 +21,9 @@ def generate_graphs_from_csv(csv_file, output_dir):
 
                 # Try to generate the graph
                 G = strongly_regular_graph(v, k, l, mu)
-                output_path = os.path.join(output_dir, f"{v}.g6")
 
+                # Save graph
+                output_path = os.path.join(output_dir, f"{v}.g6")
                 with open(output_path, "w") as out:
                     out.write(G.graph6_string() + "\n")
 

@@ -94,7 +94,6 @@ DENSITY=0.5
 
 # Processing variables
 OPT_TREE="false"
-OPT_PLANAR="false"
 
 # Process arguments
 while [[ "$#" -gt 0 ]]; do
