@@ -97,7 +97,7 @@ bool try_tree_optimization(graph *graph1, graph *graph2, const int n, bool shoul
     free_mygraph(my_graph1);
     free_mygraph(my_graph2);
 
-    return result;
+    return true;
 }
 
 void free_graphs(graph **graphs, const int count) {

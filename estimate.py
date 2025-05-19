@@ -81,10 +81,9 @@ def estimate(data_file, output_dir):
     plt.plot(x, y_poly, label="Polynomial fit", color="green")
     plt.plot(x, y_poly2, label="Polynomial2 fit", color="purple")
     plt.plot(x, y_poly3, label="Polynomial3 fit", color="brown")
-    plt.legend()
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.title("Function Fits")
+    plt.xticks([])
+    plt.yticks([])
+    plt.legend(fontsize=20)
     plt.savefig(output_picture, dpi=600, bbox_inches='tight')
     print(f"Plot saved as '{output_picture}'")
 

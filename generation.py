@@ -7,6 +7,53 @@ NON_ISO_MAX_ATTEMPTS = 30
 REGULAR_BIPARTITE_MAX_ATTEMPTS = 100
 
 # === Custom Graph Generators ===
+def generate_random(n, d):
+    # Compute number of edges
+    max_edges = n * (n - 1) // 2
+    num_edges = round(d * max_edges)
+
+    # Start from empty graph
+    G = graphs.EmptyGraph()
+    for i in range(n):
+        G.add_vertex()
+
+    # Randomly choose from all possible edges
+    all_possible_edges = list({(i, j) for i in range(n) for j in range(i + 1, n)})
+    edges = random.sample(all_possible_edges, num_edges)
+
+    # Fill empty graph with edges
+    for u, v in edges:
+        G.add_edge(u, v)
+
+    return G
+
+def generate_random_connected(n, d):
+    if not (0 <= d <= 1):
+        raise ValueError("Density must be between 0 and 1")
+    if n < 1:
+        raise ValueError("Number of nodes must be at least 1")
+
+    # Compute number of edges to add
+    min_edges = n - 1
+    max_edges = n * (n - 1) // 2
+    num_additional_edges = round(d * (max_edges - min_edges))
+
+    # Start from tree (guarantee connectivity)
+    G = graphs.RandomTree(n)
+
+    # Find edges that are not already in the graph
+    existing_edges = set(G.edges(labels=False))
+    all_possible_edges = {(i, j) for i in range(n) for j in range(i + 1, n)}
+    remaining_edges = list(all_possible_edges - existing_edges)
+
+    # Get random sample from available edges
+    additional_edges = random.sample(remaining_edges, num_additional_edges)
+
+    # Add edges to the initial tree
+    for u, v in additional_edges:
+        G.add_edge(u, v)
+
+    return G
 
 def generate_cactus(n):
     if n < 1:
@@ -131,9 +178,6 @@ def generate_cycle(n):
 def generate_tree(n):
     return graphs.RandomTree(n)
 
-def generate_random_graph(n, p):
-    return graphs.RandomGNP(n, p)
-
 def generate_regular(d, n):
     if (d*n) % 2 != 0:
         raise ValueError("degree * n must be even!")
@@ -152,7 +196,9 @@ def generate_graph(graph_type, n, density, degree):
         case "tree":
             return generate_tree(n)
         case "random":
-            return generate_random_graph(n, density)
+            return generate_random(n, density)
+        case "random_connected":
+            return generate_random_connected(n, density)
         case "regular":
             return generate_regular(degree, n)
         case "cactus":

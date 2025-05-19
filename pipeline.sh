@@ -19,6 +19,7 @@ GRAPH TYPE (required if generation stage is not dropped):
     bipartite
     tree
     random
+    random_connected
     regular
     cactus
     cycle
@@ -50,7 +51,7 @@ TYPE-SPECIFIC GENERATION OPTIONS:
     --degree <int>              Degree of each vertex (default: 3).
 
 PROCESSING OPTIONS:
-  --opt_tree                    Run processing stage with optimization for trees.
+    --opt_tree                  Run processing stage with optimization for trees.
 
 NOTES:
   - For 'srg' and 'planar' types, generation is skipped automatically and pre-prepared datasets are used.
@@ -178,7 +179,7 @@ case "$GRAPH_TYPE" in
         RUN_GEN="false"
         DATASET_DIR="prepared_dataset/${GRAPH_TYPE}/"
         ;;
-    cycle|complete)
+    cycle|complete|path|complete_bipartite)
         ONLY_ISOMORPHIC="true"
         ;;
 esac

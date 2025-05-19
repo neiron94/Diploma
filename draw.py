@@ -18,7 +18,7 @@ def visualize(data_file, output_dir):
     only_isomorphic = non_iso_data.empty
 
     # Create the plot
-    plt.figure(figsize=(20, 12))
+    plt.figure(figsize=(13, 12))
 
     # Plot isomorphic results
     plt.scatter(iso_data['node_count'], iso_data['average_time'], color='blue', marker='o', label='Isomorphic')
@@ -27,10 +27,12 @@ def visualize(data_file, output_dir):
     if not only_isomorphic:
         plt.scatter(non_iso_data['node_count'], non_iso_data['average_time'], color='red', marker='x', label='Non-Isomorphic')
 
-    # Add labels and legend
-    plt.xlabel('Node Count')
-    plt.ylabel('Average Time (seconds)')
-    plt.legend()
+    # Additional visualisation settings
+    plt.xlabel('Node Count', fontsize=20)
+    plt.ylabel('Average Time (seconds)', fontsize=20)
+    plt.tick_params(axis='both', which='both', labelsize=20)
+    if not only_isomorphic:
+        plt.legend(fontsize=20)
     plt.grid(True)
 
     # Save the plot as an image
